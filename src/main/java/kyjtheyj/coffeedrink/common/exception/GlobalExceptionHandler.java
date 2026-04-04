@@ -1,9 +1,10 @@
 package kyjtheyj.coffeedrink.common.exception;
 
-import kyjtheyj.coffeedrink.common.dto.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,5 +21,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<Void>> handleCriticalErrorException(Exception e) {
         log.error("서버 에러 발생", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(BaseResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.name(), "서버 오류로 인해 잠시 후 다시 시도하시기 바랍니다"));
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<BaseResponse<Void>> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+        log.error("데이터 유효성 에러 발생 : ", e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponse.fail(HttpStatus.BAD_REQUEST.name(), e.getAllErrors().getFirst().getDefaultMessage()));
     }
 }

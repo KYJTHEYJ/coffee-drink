@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kyjtheyj.coffeedrink.common.config.security.UserDetailServiceImpl;
-import kyjtheyj.coffeedrink.common.dto.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -35,8 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // 통과 API 패턴 기록 (Path Pattern 사용)
     private static final List<PathPattern> EXCLUDE_PATTERNS = List.of(
-            patternParser.parse("/v1/api/auth/**")
-            , patternParser.parse("/api/simple/**")
+            patternParser.parse("/v1/api/**")
     );
 
     @Override

@@ -1,4 +1,4 @@
-package kyjtheyj.coffeedrink.common.dto;
+package kyjtheyj.coffeedrink.common.model;
 
 import org.springframework.data.domain.Page;
 

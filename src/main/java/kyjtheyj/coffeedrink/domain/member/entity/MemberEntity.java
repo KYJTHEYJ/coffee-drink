@@ -36,25 +36,13 @@ public class MemberEntity extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private MemberRole role;
 
-    private boolean withdraw = false;
-
-    @Column(name = "withdraw_at")
-    private LocalDateTime withdrawAt;
-
     public static MemberEntity register(String email, String name, String pwd, MemberRole role) {
         MemberEntity entity = new MemberEntity();
         entity.email = email;
         entity.name = name;
         entity.pwd = pwd;
         entity.role = role;
-        entity.withdraw = false;
-        entity.withdrawAt = null;
         return entity;
-    }
-
-    public void withdraw() {
-        this.withdraw = true;
-        this.withdrawAt = LocalDateTime.now();
     }
 
     public void updatePwd(String pwd) {

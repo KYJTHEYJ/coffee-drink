@@ -1,23 +1,36 @@
 package kyjtheyj.coffeedrink.domain.member.service;
 
+import kyjtheyj.coffeedrink.common.config.jwt.JwtUtil;
 import kyjtheyj.coffeedrink.common.exception.ServiceErrorException;
-import kyjtheyj.coffeedrink.domain.member.model.request.MemberRegisterRequest;
-import kyjtheyj.coffeedrink.domain.member.model.response.MemberRegisterResponse;
+import kyjtheyj.coffeedrink.common.service.RedisService;
 import kyjtheyj.coffeedrink.domain.member.entity.MemberEntity;
 import kyjtheyj.coffeedrink.domain.member.entity.MemberRole;
+import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
+import kyjtheyj.coffeedrink.domain.member.model.request.MemberRegisterRequest;
+import kyjtheyj.coffeedrink.domain.member.model.request.MemberRefreshRequest;
+import kyjtheyj.coffeedrink.domain.member.model.response.MemberRefreshResponse;
+import kyjtheyj.coffeedrink.domain.member.model.response.MemberLoginResponse;
+import kyjtheyj.coffeedrink.domain.member.model.response.MemberRegisterResponse;
 import kyjtheyj.coffeedrink.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static kyjtheyj.coffeedrink.common.exception.domain.MemberExceptionEnum.ERR_MEMBER_EMAIL_DUPLICATED;
+import static kyjtheyj.coffeedrink.common.exception.domain.MemberExceptionEnum.ERR_TOKEN_INVALID;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final RedisService redisService;
+
+    @Value("${jwt.secret.refreshExpire}")
+    private long refreshTokenExpire;
 
     @Transactional
     public MemberRegisterResponse signUp(MemberRegisterRequest request) {
@@ -30,5 +43,36 @@ public class MemberService {
         memberRepository.save(member);
 
         return MemberRegisterResponse.register(member);
+    }
+
+    public MemberLoginResponse signIn(MemberLoginRequest request) {
+        String accessToken = jwtUtil.createAccessToken(request.email());
+        String refreshToken = jwtUtil.createRefreshToken(request.email());
+
+        redisService.saveRefreshToken(request.email(), refreshToken, refreshTokenExpire);
+
+        return new MemberLoginResponse(accessToken, refreshToken);
+    }
+
+    public MemberRefreshResponse refresh(MemberRefreshRequest request) {
+        String refreshToken = request.refreshToken();
+
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new ServiceErrorException(ERR_TOKEN_INVALID);
+        }
+
+        String email = jwtUtil.extractSubject(refreshToken);
+        String savedToken = redisService.getRefreshToken(email);
+
+        if (savedToken == null || !savedToken.equals(refreshToken)) {
+            throw new ServiceErrorException(ERR_TOKEN_INVALID);
+        }
+
+        String newAccessToken = jwtUtil.createAccessToken(email);
+        String newRefreshToken = jwtUtil.createRefreshToken(email);
+
+        redisService.saveRefreshToken(email, newRefreshToken, refreshTokenExpire);
+
+        return new MemberRefreshResponse(newAccessToken, newRefreshToken);
     }
 }

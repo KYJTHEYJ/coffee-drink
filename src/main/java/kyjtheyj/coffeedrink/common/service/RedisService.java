@@ -1,0 +1,29 @@
+package kyjtheyj.coffeedrink.common.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
+
+import static kyjtheyj.coffeedrink.common.constant.RedisConst.REFRESH_TOKEN_PREFIX;
+
+@Service
+@RequiredArgsConstructor
+public class RedisService {
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public void saveRefreshToken(String email, String refreshToken, long expireTime) {
+        redisTemplate.opsForValue().set(
+                REFRESH_TOKEN_PREFIX + email
+                , refreshToken
+                , expireTime
+                , TimeUnit.MILLISECONDS
+        );
+    }
+
+    public String getRefreshToken(String email) {
+        Object value = redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + email);
+        return value != null ? value.toString() : null;
+    }
+}

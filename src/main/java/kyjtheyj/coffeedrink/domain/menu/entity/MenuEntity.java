@@ -34,11 +34,11 @@ public class MenuEntity extends BaseTimeWithDelEntity {
     @Column(name = "sort_number", nullable = false)
     private int sortNumber;
 
-    public static MenuEntity register(UUID menuCategoryId, String name, long price, String descripton, int sortNumber) {
+    public static MenuEntity register(String name, long price, String description, int sortNumber) {
         MenuEntity entity = new MenuEntity();
         entity.name = name;
         entity.price = price;
-        entity.description = descripton;
+        entity.description = description;
         entity.sortNumber = sortNumber;
         return entity;
     }

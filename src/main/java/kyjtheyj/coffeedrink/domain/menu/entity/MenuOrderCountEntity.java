@@ -31,7 +31,7 @@ public class MenuOrderCountEntity {
     @Column(name = "count_dt", nullable = false)
     private LocalDateTime countDt;
 
-    public static MenuOrderCountEntity create(UUID menuId, long orderCount, LocalDateTime countDt) {
+    public static MenuOrderCountEntity register(UUID menuId, long orderCount, LocalDateTime countDt) {
         MenuOrderCountEntity entity = new MenuOrderCountEntity();
         entity.menuId = menuId;
         entity.orderCount = orderCount;

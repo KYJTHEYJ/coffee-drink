@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
     // Security 내 PasswordEncoder Bean 등록
     @Bean
@@ -44,8 +44,9 @@ public class SecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                    //.anyRequest().authenticated()
-                    .anyRequest().permitAll() // TODO 개발 후 적용
+                    .requestMatchers("/v1/api/members/signup").permitAll()
+                    .requestMatchers("/v1/api/members/signin").permitAll()
+                    .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

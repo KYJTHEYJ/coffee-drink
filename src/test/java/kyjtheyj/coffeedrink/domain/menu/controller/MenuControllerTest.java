@@ -55,6 +55,7 @@ public class MenuControllerTest {
         given(redisService.isBlacklist(MenuFixture.adminToken)).willReturn(false);
         given(jwtUtil.extractSubject(MenuFixture.adminToken)).willReturn(MenuFixture.adminEmail);
         given(jwtUtil.extractRoleByToken(MenuFixture.adminToken)).willReturn(MemberFixture.memberAdminRole);
+        given(jwtUtil.extractMemberIdByToken(MenuFixture.adminToken)).willReturn(MemberFixture.memberId.toString());
 
         given(menuService.register(any())).willReturn(MenuFixture.menuRegisterResponse());
 
@@ -78,6 +79,7 @@ public class MenuControllerTest {
         given(redisService.isBlacklist(MenuFixture.userToken)).willReturn(false);
         given(jwtUtil.extractSubject(MenuFixture.userToken)).willReturn(MenuFixture.userEmail);
         given(jwtUtil.extractRoleByToken(MenuFixture.userToken)).willReturn(MemberFixture.memberUserRole);
+        given(jwtUtil.extractMemberIdByToken(MenuFixture.userToken)).willReturn(MemberFixture.memberId.toString());
 
         assertThat(mockMvc.post()
                 .uri("/v1/api/menus")
@@ -112,6 +114,7 @@ public class MenuControllerTest {
         given(redisService.isBlacklist(MenuFixture.adminToken)).willReturn(false);
         given(jwtUtil.extractSubject(MenuFixture.adminToken)).willReturn(MenuFixture.adminEmail);
         given(jwtUtil.extractRoleByToken(MenuFixture.adminToken)).willReturn(MemberFixture.memberAdminRole);
+        given(jwtUtil.extractMemberIdByToken(MenuFixture.adminToken)).willReturn(MemberFixture.memberId.toString());
 
         assertThat(mockMvc.post()
                 .uri("/v1/api/menus")

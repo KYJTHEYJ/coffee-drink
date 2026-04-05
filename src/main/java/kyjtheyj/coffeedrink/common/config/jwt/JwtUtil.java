@@ -1,6 +1,5 @@
 package kyjtheyj.coffeedrink.common.config.jwt;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -42,10 +42,12 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createAccessToken(String email) {
+    public String createAccessToken(String email, UUID memberId, String role) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(email)
+                .claim("memberId", memberId)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + accessTokenExpire))
                 .signWith(secretKey, Jwts.SIG.HS256)
@@ -81,13 +83,19 @@ public class JwtUtil {
         return expirationDate.getTime() - new Date().getTime();
     }
 
-    // 토큰 내 클레임 추출
-    private Claims extractClaimByToken(String token) {
-        return parser.parseSignedClaims(token).getPayload();
-    }
-
     // Subject 추출하기
     public String extractSubject(String token) {
         return parser.parseSignedClaims(token).getPayload().getSubject();
     }
+
+    // Claim 내 Role 추출하기
+    public String extractRoleByToken(String token) {
+        return parser.parseSignedClaims(token).getPayload().get("role", String.class);
+    }
+
+    // Claim 내 MemberId 추출하기
+    public String extractMemberIdByToken(String token) {
+        return parser.parseSignedClaims(token).getPayload().get("memberId", String.class);
+    }
+
 }

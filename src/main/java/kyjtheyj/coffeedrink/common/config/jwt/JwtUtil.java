@@ -75,6 +75,12 @@ public class JwtUtil {
         }
     }
 
+    // 블랙리스트를 위한 accessToken 의 남은 만료시간 계산
+    public long getRemainingTime(String accessToken) {
+        Date expirationDate = parser.parseSignedClaims(accessToken).getPayload().getExpiration();
+        return expirationDate.getTime() - new Date().getTime();
+    }
+
     // 토큰 내 클레임 추출
     private Claims extractClaimByToken(String token) {
         return parser.parseSignedClaims(token).getPayload();

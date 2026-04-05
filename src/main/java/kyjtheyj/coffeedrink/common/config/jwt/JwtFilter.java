@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kyjtheyj.coffeedrink.common.config.security.UserDetailServiceImpl;
 import kyjtheyj.coffeedrink.common.model.BaseResponse;
+import kyjtheyj.coffeedrink.common.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -30,6 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailServiceImpl userDetailServiceImpl;
     private final ObjectMapper objectMapper;
+    private final RedisService redisService;
 
     private static final PathPatternParser patternParser = new PathPatternParser();
 
@@ -56,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if(jwtUtil.validateToken(token)) {
+        if(jwtUtil.validateToken(token) && !redisService.isBlacklist(token)) {
             String email = jwtUtil.extractSubject(token);
             UserDetails user = userDetailServiceImpl.loadUserByUsername(email);
             SecurityContextHolder.getContext().setAuthentication(

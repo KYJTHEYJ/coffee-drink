@@ -22,9 +22,6 @@ public class MenuEntity extends BaseTimeWithDelEntity {
     @Column(nullable = false, updatable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "menu_category_id", nullable = false, updatable = false, columnDefinition = "BINARY(16)")
-    private UUID menuCategoryId;
-
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -39,7 +36,6 @@ public class MenuEntity extends BaseTimeWithDelEntity {
 
     public static MenuEntity register(UUID menuCategoryId, String name, long price, String descripton, int sortNumber) {
         MenuEntity entity = new MenuEntity();
-        entity.menuCategoryId = menuCategoryId;
         entity.name = name;
         entity.price = price;
         entity.description = descripton;

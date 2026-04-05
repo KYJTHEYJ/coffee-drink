@@ -1,6 +1,5 @@
 package kyjtheyj.coffeedrink.domain.member.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import kyjtheyj.coffeedrink.common.model.BaseResponse;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
@@ -44,5 +43,10 @@ public class MemberController {
         return ResponseEntity.ok(BaseResponse.success(HttpStatus.OK.name(), "토큰이 재발급되었습니다", response));
     }
 
-
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse<Void>> signOut(@RequestHeader("Authorization") String authorization) {
+        String accessToken = authorization.substring("Bearer ".length());
+        memberService.logOut(accessToken);
+        return ResponseEntity.ok(BaseResponse.success(HttpStatus.OK.name(), "로그아웃이 완료되었습니다", null));
+    }
 }

@@ -6,4 +6,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RedisConst {
     public static final String REFRESH_TOKEN_PREFIX = "Refresh-Token:";
+    public static final String BLACK_LIST_PREFIX = "BlackList:";
 }

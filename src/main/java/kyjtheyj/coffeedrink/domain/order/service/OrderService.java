@@ -1,6 +1,7 @@
 package kyjtheyj.coffeedrink.domain.order.service;
 
 import kyjtheyj.coffeedrink.common.model.kafka.event.MenuOrderEvent;
+import kyjtheyj.coffeedrink.common.model.kafka.event.OrderDataCollectionEvent;
 import kyjtheyj.coffeedrink.common.model.kafka.event.PointLogEvent;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuEntity;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuOrderCountEntity;
@@ -77,6 +78,7 @@ public class OrderService {
         // 커밋 후에 전달 될수 있도록 추가
         eventPublisher.publishEvent(new PointLogEvent(memberId, order.getId(), totalPrice, PointLogType.USE));
         eventPublisher.publishEvent(new MenuOrderEvent(menuIdList, LocalDate.now()));
+        eventPublisher.publishEvent(new OrderDataCollectionEvent(memberId, menuIdList, totalPrice));
 
         return new OrderMenuResponse(order.getId(), order.getOrderNo(), order.getTotalPrice());
     }

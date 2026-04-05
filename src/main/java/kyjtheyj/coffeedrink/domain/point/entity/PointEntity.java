@@ -34,4 +34,8 @@ public class PointEntity extends BaseTimeWithDelEntity {
         point.balance = BigInteger.ZERO;
         return point;
     }
+
+    public void add(BigInteger point) {
+        this.balance = this.balance.add(point);
+    }
 }

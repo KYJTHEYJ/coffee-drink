@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,31 +30,18 @@ public class OrderEntity {
     @Column(name = "order_no", nullable = false, updatable = false, length = 100)
     private String orderNo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    private OrderStatus status;
-
     @Column(name = "total_price", nullable = false)
-    private long totalPrice;
+    private BigInteger totalPrice;
 
     @Column(name = "order_at", nullable = false)
     private LocalDateTime orderAt;
 
-    public static OrderEntity register(UUID memberId, String orderNo, long totalPrice, LocalDateTime orderAt) {
+    public static OrderEntity register(UUID memberId, String orderNo, BigInteger totalPrice, LocalDateTime orderAt) {
         OrderEntity entity = new OrderEntity();
         entity.memberId = memberId;
         entity.orderNo = orderNo;
-        entity.status = OrderStatus.PENDING;
         entity.totalPrice = totalPrice;
         entity.orderAt = orderAt;
         return entity;
-    }
-
-    public void confirm() {
-        this.status = OrderStatus.CONFIRMED;
-    }
-
-    public void cancel() {
-        this.status = OrderStatus.CANCELLED;
     }
 }

@@ -43,11 +43,4 @@ public class MenuEntity extends BaseTimeWithDelEntity {
         entity.sortNumber = sortNumber;
         return entity;
     }
-
-    public void update(String name, BigInteger price, String description, int sortNumber) {
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.sortNumber = sortNumber;
-    }
 }

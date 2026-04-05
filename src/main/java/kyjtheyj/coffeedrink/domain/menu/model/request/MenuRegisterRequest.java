@@ -24,6 +24,6 @@ public record MenuRegisterRequest(
 
         , @NotNull(message = "재고는 필수입니다")
         @Min(value = 0, message = "재고는 0개 이상이어야 합니다")
-        Long quantity
+        BigInteger quantity
 ) {
 }

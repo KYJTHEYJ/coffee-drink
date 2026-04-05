@@ -2,12 +2,17 @@ package kyjtheyj.coffeedrink.domain.menu.entity;
 
 import jakarta.persistence.*;
 import kyjtheyj.coffeedrink.common.entity.BaseTimeWithDelEntity;
+import kyjtheyj.coffeedrink.common.exception.ServiceErrorException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigInteger;
 import java.util.UUID;
+
+import static kyjtheyj.coffeedrink.common.exception.domain.MenuExceptionEnum.ERR_MENU_QUANTITY_INVALID;
+import static kyjtheyj.coffeedrink.common.exception.domain.MenuExceptionEnum.ERR_MENU_QUANTITY_LESS;
 
 @Getter
 @Entity
@@ -26,16 +31,32 @@ public class MenuStockEntity extends BaseTimeWithDelEntity {
     private UUID menuId;
 
     @Column(nullable = false)
-    private long quantity;
+    private BigInteger quantity;
 
-    public static MenuStockEntity register(UUID menuId, long quantity) {
+    public static MenuStockEntity register(UUID menuId, BigInteger quantity) {
         MenuStockEntity entity = new MenuStockEntity();
         entity.menuId = menuId;
         entity.quantity = quantity;
         return entity;
     }
 
-    public void updateQuantity(long quantity) {
-        this.quantity = quantity;
+    public void decreaseQuantity(BigInteger quantity) {
+        if (quantity.compareTo(BigInteger.ZERO) <= 0) {
+            throw new ServiceErrorException(ERR_MENU_QUANTITY_INVALID);
+        }
+
+        if (quantity.compareTo(this.quantity) > 0) {
+            throw new ServiceErrorException(ERR_MENU_QUANTITY_LESS);
+        }
+
+        this.quantity = this.quantity.subtract(quantity);
+    }
+
+    public void increaseQuantity(BigInteger quantity) {
+        if (quantity.compareTo(BigInteger.ZERO) <= 0) {
+            throw new ServiceErrorException(ERR_MENU_QUANTITY_INVALID);
+        }
+
+        this.quantity = this.quantity.add(quantity);
     }
 }

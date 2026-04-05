@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
 @Getter
@@ -31,15 +32,15 @@ public class OrderMenuEntity {
     private String nameSnap;
 
     @Column(name = "price_snap", nullable = false)
-    private long priceSnap;
+    private BigInteger priceSnap;
 
     @Column(nullable = false)
-    private long quantity;
+    private BigInteger quantity;
 
     @Column(name = "total_price", nullable = false)
-    private long totalPrice;
+    private BigInteger totalPrice;
 
-    public static OrderMenuEntity register(UUID orderId, UUID menuId, String nameSnap, long priceSnap, long quantity, long totalPrice) {
+    public static OrderMenuEntity register(UUID orderId, UUID menuId, String nameSnap, BigInteger priceSnap, BigInteger quantity, BigInteger totalPrice) {
         OrderMenuEntity entity = new OrderMenuEntity();
         entity.orderId = orderId;
         entity.menuId = menuId;

@@ -3,8 +3,8 @@ package kyjtheyj.coffeedrink.domain.point.controller;
 import jakarta.validation.Valid;
 import kyjtheyj.coffeedrink.common.model.response.BaseResponse;
 import kyjtheyj.coffeedrink.common.model.principal.MemberPrincipal;
-import kyjtheyj.coffeedrink.domain.point.model.request.PointAddRequest;
-import kyjtheyj.coffeedrink.domain.point.model.response.PointAddResponse;
+import kyjtheyj.coffeedrink.domain.point.model.request.PointChargeRequest;
+import kyjtheyj.coffeedrink.domain.point.model.response.PointChargeResponse;
 import kyjtheyj.coffeedrink.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,8 +22,8 @@ public class PointController {
     private final PointService pointService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<PointAddResponse>> chargePoint(
-            @Valid @RequestBody PointAddRequest request
+    public ResponseEntity<BaseResponse<PointChargeResponse>> chargePoint(
+            @Valid @RequestBody PointChargeRequest request
             , @AuthenticationPrincipal MemberPrincipal memberInfo
     ) {
         if (!memberInfo.memberId().equals(request.memberId())) {

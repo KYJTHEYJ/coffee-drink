@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.UUID;
 
-public record PointAddRequest(
-        @NotNull(message = "식별자는 필수 입니다")
+public record PointChargeRequest(
+        @NotNull(message = "회원 식별자는 필수 입니다")
         UUID memberId
 
         , @NotNull(message = "포인트 충전 값은 필수 입니다")

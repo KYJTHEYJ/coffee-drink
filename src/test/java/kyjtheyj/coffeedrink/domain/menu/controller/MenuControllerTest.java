@@ -108,7 +108,7 @@ public class MenuControllerTest {
     @Test
     @DisplayName("메뉴 등록 실패 - 유효성 검사 오류")
     void register_fail_validation() {
-        MenuRegisterRequest request = new MenuRegisterRequest("", BigInteger.valueOf(4500), "설명", 1, 100L);
+        MenuRegisterRequest request = new MenuRegisterRequest("", BigInteger.valueOf(4500), "설명", 1, BigInteger.valueOf(100));
 
         given(jwtUtil.validateToken(MenuFixture.adminToken)).willReturn(true);
         given(redisService.isBlacklist(MenuFixture.adminToken)).willReturn(false);

@@ -1,5 +1,7 @@
 package kyjtheyj.coffeedrink.domain.menu.service;
 
+import kyjtheyj.coffeedrink.common.annotation.DistributedLock;
+import kyjtheyj.coffeedrink.common.exception.ServiceErrorException;
 import kyjtheyj.coffeedrink.common.model.response.PageResponse;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuEntity;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuStockEntity;
@@ -17,6 +19,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+import java.util.UUID;
+
+import static kyjtheyj.coffeedrink.common.exception.domain.MenuExceptionEnum.ERR_MENU_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class MenuService {
@@ -28,10 +35,10 @@ public class MenuService {
     @Transactional
     public MenuRegisterResponse register(MenuRegisterRequest request) {
         MenuEntity menu = MenuEntity.register(
-                request.name(),
-                request.price(),
-                request.description(),
-                request.sortNumber()
+                request.name()
+                , request.price()
+                , request.description()
+                , request.sortNumber()
         );
         menuRepository.save(menu);
 
@@ -56,5 +63,17 @@ public class MenuService {
                 );
 
         return PageResponse.register(menus);
+    }
+
+    @DistributedLock(key = "'menuStock:' + #menuId")
+    public void decreaseStock(UUID menuId, BigInteger quantity) {
+        MenuStockEntity menuStock = menuStockRepository.findByMenuId(menuId).orElseThrow(() -> new ServiceErrorException(ERR_MENU_NOT_FOUND));
+        menuStock.decreaseQuantity(quantity);
+    }
+
+    @DistributedLock(key = "'menuStock:' + #menuId")
+    public void increaseStock(UUID menuId, BigInteger quantity) {
+        MenuStockEntity menuStock = menuStockRepository.findByMenuId(menuId).orElseThrow(() -> new ServiceErrorException(ERR_MENU_NOT_FOUND));
+        menuStock.increaseQuantity(quantity);
     }
 }

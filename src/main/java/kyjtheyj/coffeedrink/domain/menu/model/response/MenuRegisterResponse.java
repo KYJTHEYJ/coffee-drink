@@ -12,16 +12,16 @@ public record MenuRegisterResponse(
         , BigInteger price
         , String description
         , int sortNumber
-        , long quantity
+        , BigInteger quantity
 ) {
-    public static MenuRegisterResponse register(MenuEntity menu, MenuStockEntity stock) {
+    public static MenuRegisterResponse register(MenuEntity menu, MenuStockEntity menuStock) {
         return new MenuRegisterResponse(
-                menu.getId(),
-                menu.getName(),
-                menu.getPrice(),
-                menu.getDescription(),
-                menu.getSortNumber(),
-                stock.getQuantity()
+                menu.getId()
+                , menu.getName()
+                , menu.getPrice()
+                , menu.getDescription()
+                , menu.getSortNumber()
+                , menuStock.getQuantity()
         );
     }
 }

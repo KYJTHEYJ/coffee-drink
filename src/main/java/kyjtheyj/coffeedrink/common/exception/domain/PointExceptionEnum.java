@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum PointExceptionEnum implements ErrorCode {
-    ERR_POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트 충전 정보가 없어 충전에 실패하였습니다");
+    ERR_POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트 정보가 존재하지 않아 진행할 수 없습니다")
+    , ERR_POINT_NOT_ENOUGH(HttpStatus.BAD_REQUEST, "포인트 잔액이 부족합니다")
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -13,7 +13,7 @@ public class MenuFixture {
     public static final BigInteger menuPrice = BigInteger.valueOf(4500);
     public static final String menuDescription = "기본 아메리카노";
     public static final int menuSortNumber = 1;
-    public static final long menuQuantity = 100L;
+    public static final BigInteger menuQuantity = BigInteger.valueOf(100);
 
     public static final String adminToken = "adminToken";
     public static final String userToken = "userToken";

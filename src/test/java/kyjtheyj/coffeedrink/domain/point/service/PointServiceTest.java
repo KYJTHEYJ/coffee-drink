@@ -6,7 +6,7 @@ import kyjtheyj.coffeedrink.domain.member.fixture.MemberFixture;
 import kyjtheyj.coffeedrink.domain.member.repository.MemberRepository;
 import kyjtheyj.coffeedrink.domain.point.entity.PointLogType;
 import kyjtheyj.coffeedrink.domain.point.fixture.PointFixture;
-import kyjtheyj.coffeedrink.domain.point.model.response.PointAddResponse;
+import kyjtheyj.coffeedrink.domain.point.model.response.PointChargeResponse;
 import kyjtheyj.coffeedrink.domain.point.repository.PointRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ public class PointServiceTest {
         given(memberRepository.findMemberEntityById(PointFixture.memberId)).willReturn(Optional.of(MemberFixture.memberWithRoleUser()));
         given(pointRepository.findByMemberId(any())).willReturn(Optional.of(PointFixture.pointEntity()));
 
-        PointAddResponse response = pointService.chargePoint(PointFixture.memberId, PointFixture.chargeAmount);
+        PointChargeResponse response = pointService.chargePoint(PointFixture.memberId, PointFixture.chargeAmount);
 
         assertThat(response.balance()).isEqualTo(PointFixture.chargeAmount);
 
@@ -68,7 +68,7 @@ public class PointServiceTest {
 
         assertThatThrownBy(() -> pointService.chargePoint(PointFixture.memberId, PointFixture.chargeAmount))
                 .isInstanceOf(ServiceErrorException.class)
-                .hasMessageContaining("존재하지 않는 회원입니다");  // MemberExceptionEnum.ERR_MEMBER_NOT_FOUND
+                .hasMessageContaining("존재하지 않는 회원입니다");
 
         verify(eventPublisher, never()).publishEvent(any());
     }
@@ -81,7 +81,7 @@ public class PointServiceTest {
 
         assertThatThrownBy(() -> pointService.chargePoint(PointFixture.memberId, PointFixture.chargeAmount))
                 .isInstanceOf(ServiceErrorException.class)
-                .hasMessageContaining("포인트 충전 정보가 없어 충전에 실패하였습니다");  // PointExceptionEnum.ERR_POINT_NOT_FOUND
+                .hasMessageContaining("포인트 정보가 존재하지 않아 진행할 수 없습니다");
 
         verify(eventPublisher, never()).publishEvent(any());
     }

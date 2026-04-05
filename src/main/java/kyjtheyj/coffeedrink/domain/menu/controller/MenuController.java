@@ -28,11 +28,13 @@ public class MenuController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<PageResponse<MenuListResponse>>> register(
+    public ResponseEntity<BaseResponse<PageResponse<MenuListResponse>>> getMenuList(
             @RequestParam(defaultValue = "0") int page
             , @RequestParam(defaultValue = "10") int size
     ) {
-        PageResponse<MenuListResponse> response = menuService.menuList(page, size);
+        PageResponse<MenuListResponse> response = menuService.getMenuList(page, size);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(HttpStatus.CREATED.name(), "메뉴 조회 성공", response));
     }
+
+
 }

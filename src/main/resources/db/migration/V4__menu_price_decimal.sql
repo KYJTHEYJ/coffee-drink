@@ -1,0 +1,6 @@
+ALTER TABLE menus
+DROP
+COLUMN price;
+
+ALTER TABLE menus
+    ADD price DECIMAL NOT NULL;

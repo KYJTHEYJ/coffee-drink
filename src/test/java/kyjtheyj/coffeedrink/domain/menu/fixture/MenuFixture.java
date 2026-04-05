@@ -3,13 +3,14 @@ package kyjtheyj.coffeedrink.domain.menu.fixture;
 import kyjtheyj.coffeedrink.domain.menu.model.request.MenuRegisterRequest;
 import kyjtheyj.coffeedrink.domain.menu.model.response.MenuRegisterResponse;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
 public class MenuFixture {
 
     public static final UUID menuId = UUID.randomUUID();
     public static final String menuName = "아메리카노";
-    public static final long menuPrice = 4500L;
+    public static final BigInteger menuPrice = BigInteger.valueOf(4500);
     public static final String menuDescription = "기본 아메리카노";
     public static final int menuSortNumber = 1;
     public static final long menuQuantity = 100L;

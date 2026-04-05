@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
 @Getter
@@ -26,7 +27,7 @@ public class MenuEntity extends BaseTimeWithDelEntity {
     private String name;
 
     @Column(nullable = false)
-    private long price;
+    private BigInteger price;
 
     @Column(name = "description", length = 350)
     private String description;
@@ -34,7 +35,7 @@ public class MenuEntity extends BaseTimeWithDelEntity {
     @Column(name = "sort_number", nullable = false)
     private int sortNumber;
 
-    public static MenuEntity register(String name, long price, String description, int sortNumber) {
+    public static MenuEntity register(String name, BigInteger price, String description, int sortNumber) {
         MenuEntity entity = new MenuEntity();
         entity.name = name;
         entity.price = price;
@@ -43,7 +44,7 @@ public class MenuEntity extends BaseTimeWithDelEntity {
         return entity;
     }
 
-    public void update(String name, long price, String description, int sortNumber) {
+    public void update(String name, BigInteger price, String description, int sortNumber) {
         this.name = name;
         this.price = price;
         this.description = description;

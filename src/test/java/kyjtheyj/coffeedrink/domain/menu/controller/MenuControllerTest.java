@@ -2,8 +2,8 @@ package kyjtheyj.coffeedrink.domain.menu.controller;
 
 import kyjtheyj.coffeedrink.common.config.jwt.JwtUtil;
 import kyjtheyj.coffeedrink.common.config.security.SecurityConfig;
-import kyjtheyj.coffeedrink.common.config.security.UserDetailServiceImpl;
 import kyjtheyj.coffeedrink.common.service.RedisService;
+import kyjtheyj.coffeedrink.domain.member.fixture.MemberFixture;
 import kyjtheyj.coffeedrink.domain.menu.fixture.MenuFixture;
 import kyjtheyj.coffeedrink.domain.menu.model.request.MenuRegisterRequest;
 import kyjtheyj.coffeedrink.domain.menu.service.MenuService;
@@ -14,13 +14,11 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.List;
+import java.math.BigInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,9 +43,6 @@ public class MenuControllerTest {
     private JwtUtil jwtUtil;
 
     @MockitoBean
-    private UserDetailServiceImpl userDetailServiceImpl;
-
-    @MockitoBean
     private RedisService redisService;
 
     @Test
@@ -59,8 +54,7 @@ public class MenuControllerTest {
         given(jwtUtil.validateToken(MenuFixture.adminToken)).willReturn(true);
         given(redisService.isBlacklist(MenuFixture.adminToken)).willReturn(false);
         given(jwtUtil.extractSubject(MenuFixture.adminToken)).willReturn(MenuFixture.adminEmail);
-        given(userDetailServiceImpl.loadUserByUsername(MenuFixture.adminEmail))
-                .willReturn(new User(MenuFixture.adminEmail, "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+        given(jwtUtil.extractRoleByToken(MenuFixture.adminToken)).willReturn(MemberFixture.memberAdminRole);
 
         given(menuService.register(any())).willReturn(MenuFixture.menuRegisterResponse());
 
@@ -83,8 +77,7 @@ public class MenuControllerTest {
         given(jwtUtil.validateToken(MenuFixture.userToken)).willReturn(true);
         given(redisService.isBlacklist(MenuFixture.userToken)).willReturn(false);
         given(jwtUtil.extractSubject(MenuFixture.userToken)).willReturn(MenuFixture.userEmail);
-        given(userDetailServiceImpl.loadUserByUsername(MenuFixture.userEmail))
-                .willReturn(new User(MenuFixture.userEmail, "", List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+        given(jwtUtil.extractRoleByToken(MenuFixture.userToken)).willReturn(MemberFixture.memberUserRole);
 
         assertThat(mockMvc.post()
                 .uri("/v1/api/menus")
@@ -113,13 +106,12 @@ public class MenuControllerTest {
     @Test
     @DisplayName("메뉴 등록 실패 - 유효성 검사 오류")
     void register_fail_validation() {
-        MenuRegisterRequest request = new MenuRegisterRequest("", 4500L, "설명", 1, 100L);
+        MenuRegisterRequest request = new MenuRegisterRequest("", BigInteger.valueOf(4500), "설명", 1, 100L);
 
         given(jwtUtil.validateToken(MenuFixture.adminToken)).willReturn(true);
         given(redisService.isBlacklist(MenuFixture.adminToken)).willReturn(false);
         given(jwtUtil.extractSubject(MenuFixture.adminToken)).willReturn(MenuFixture.adminEmail);
-        given(userDetailServiceImpl.loadUserByUsername(MenuFixture.adminEmail))
-                .willReturn(new User(MenuFixture.adminEmail, "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+        given(jwtUtil.extractRoleByToken(MenuFixture.adminToken)).willReturn(MemberFixture.memberAdminRole);
 
         assertThat(mockMvc.post()
                 .uri("/v1/api/menus")

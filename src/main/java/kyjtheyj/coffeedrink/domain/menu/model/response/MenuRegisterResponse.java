@@ -3,12 +3,13 @@ package kyjtheyj.coffeedrink.domain.menu.model.response;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuEntity;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuStockEntity;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
 public record MenuRegisterResponse(
         UUID menuId
         , String name
-        , long price
+        , BigInteger price
         , String description
         , int sortNumber
         , long quantity

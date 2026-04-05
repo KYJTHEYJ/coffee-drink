@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum CommonExceptionEnum implements ErrorCode {
-    ERR_GET_REDIS_LOCK_FAIL(HttpStatus.CONFLICT, "서버 오류 처리 실패, 락 획득에 실패하였습니다");
+    ERR_GET_REDIS_LOCK_FAIL(HttpStatus.CONFLICT, "서버 오류 처리 실패, 락 획득에 실패하였습니다")
+    , ERR_GET_KAFKA_FAIL(HttpStatus.CONFLICT, "서버 오류 처리 실패, Kafka 메세지 Consume 실패하였습니다")
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -55,7 +55,7 @@ public class MenuServiceTest {
 
     @Test
     @DisplayName("메뉴 조회 성공")
-    void menuList() {
+    void getMenuList() {
         List<MenuEntity> menus = List.of(
                 MenuEntity.register("아메리카노", BigInteger.valueOf(4500), "설명", 1)
         );
@@ -65,7 +65,7 @@ public class MenuServiceTest {
 
         given(menuRepository.findAll(any(Pageable.class))).willReturn(menuPage);
 
-        PageResponse<MenuListResponse> response = menuService.menuList(0, 10);
+        PageResponse<MenuListResponse> response = menuService.getMenuList(0, 10);
 
         assertThat(response.content().getFirst().name()).isEqualTo("아메리카노");
         assertThat(response.currentPage()).isEqualTo(0);

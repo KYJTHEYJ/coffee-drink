@@ -49,7 +49,7 @@ public class MenuService {
     }
 
     @Cacheable(cacheNames = "menus", key = "#page + ':' + #size")
-    public PageResponse<MenuListResponse> menuList(int page, int size) {
+    public PageResponse<MenuListResponse> getMenuList(int page, int size) {
         Page<MenuListResponse> menus = menuRepository
                 .findAll(PageRequest.of(page, size, Sort.by("sortNumber").ascending()))
                 .map(menuEntity ->

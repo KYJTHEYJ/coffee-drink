@@ -1,5 +1,6 @@
 package kyjtheyj.coffeedrink.domain.order.service;
 
+import kyjtheyj.coffeedrink.common.model.kafka.event.MenuOrderEvent;
 import kyjtheyj.coffeedrink.common.model.kafka.event.PointLogEvent;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuEntity;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuOrderCountEntity;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,7 @@ public class OrderService {
 
         // 커밋 후에 전달 될수 있도록 추가
         eventPublisher.publishEvent(new PointLogEvent(memberId, order.getId(), totalPrice, PointLogType.USE));
+        eventPublisher.publishEvent(new MenuOrderEvent(menuIdList, LocalDate.now()));
 
         return new OrderMenuResponse(order.getId(), order.getOrderNo(), order.getTotalPrice());
     }

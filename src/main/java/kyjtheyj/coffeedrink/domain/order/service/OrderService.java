@@ -2,6 +2,8 @@ package kyjtheyj.coffeedrink.domain.order.service;
 
 import kyjtheyj.coffeedrink.common.model.kafka.event.PointLogEvent;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuEntity;
+import kyjtheyj.coffeedrink.domain.menu.entity.MenuOrderCountEntity;
+import kyjtheyj.coffeedrink.domain.menu.repository.MenuOrderCountRepository;
 import kyjtheyj.coffeedrink.domain.menu.repository.MenuRepository;
 import kyjtheyj.coffeedrink.domain.order.entity.OrderEntity;
 import kyjtheyj.coffeedrink.domain.order.entity.OrderMenuEntity;
@@ -26,14 +28,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
+    private final MenuOrderCountRepository menuOrderCountRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final MenuRepository menuRepository;
 
     // 주문 저장부
     @Transactional
-    public OrderMenuResponse saveOrder (
+    public OrderMenuResponse saveOrder(
             UUID memberId
             , BigInteger totalPrice
             , List<OrderMenuStockRequest> orderMenuStockRequestList
@@ -61,6 +64,13 @@ public class OrderService {
                     );
                 }).toList();
         orderMenuRepository.saveAll(orderMenuEntityList);
+
+        // 주문 횟수 저장
+        orderMenuStockRequestList.forEach(orderMenuStockRequest -> menuOrderCountRepository.findByMenuIdAndCountDt(orderMenuStockRequest.menuId(), order.getOrderAt().toLocalDate())
+                .ifPresentOrElse(menuOrderCountEntity -> menuOrderCountEntity.increaseOrderCount(1L)
+                        , () -> menuOrderCountRepository.save(MenuOrderCountEntity.register(orderMenuStockRequest.menuId(), 1L, order.getOrderAt().toLocalDate()))
+                )
+        );
 
         // 커밋 후에 전달 될수 있도록 추가
         eventPublisher.publishEvent(new PointLogEvent(memberId, order.getId(), totalPrice, PointLogType.USE));

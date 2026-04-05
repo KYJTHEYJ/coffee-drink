@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,13 +30,17 @@ public class MenuOrderCountEntity {
     private long orderCount;
 
     @Column(name = "count_dt", nullable = false)
-    private LocalDateTime countDt;
+    private LocalDate countDt;
 
-    public static MenuOrderCountEntity register(UUID menuId, long orderCount, LocalDateTime countDt) {
+    public static MenuOrderCountEntity register(UUID menuId, long orderCount, LocalDate countDt) {
         MenuOrderCountEntity entity = new MenuOrderCountEntity();
         entity.menuId = menuId;
         entity.orderCount = orderCount;
         entity.countDt = countDt;
         return entity;
+    }
+
+    public void increaseOrderCount(long count) {
+        this.orderCount += count;
     }
 }

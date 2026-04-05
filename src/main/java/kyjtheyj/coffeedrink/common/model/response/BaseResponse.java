@@ -1,4 +1,4 @@
-package kyjtheyj.coffeedrink.common.model;
+package kyjtheyj.coffeedrink.common.model.response;
 
 public record BaseResponse<T> (
         boolean success

@@ -21,6 +21,10 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
+  #Kafka
+  kafka:
+    bootstrap-servers: localhost:${KAFKA_PORT_1},localhost:${KAFKA_PORT_2},localhost:${KAFKA_PORT_3}
+
   # JPA
   jpa:
     hibernate:

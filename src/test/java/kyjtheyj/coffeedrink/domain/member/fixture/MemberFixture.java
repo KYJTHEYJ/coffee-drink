@@ -1,19 +1,15 @@
 package kyjtheyj.coffeedrink.domain.member.fixture;
 
-import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
+import kyjtheyj.coffeedrink.common.model.principal.MemberPrincipal;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRefreshRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRegisterRequest;
 import kyjtheyj.coffeedrink.domain.member.model.response.MemberLoginResponse;
-import kyjtheyj.coffeedrink.domain.member.model.response.MemberRefreshResponse;
-import kyjtheyj.coffeedrink.domain.member.model.response.MemberRegisterResponse;
 import kyjtheyj.coffeedrink.domain.member.entity.MemberEntity;
 import kyjtheyj.coffeedrink.domain.member.entity.MemberRole;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 import java.util.UUID;

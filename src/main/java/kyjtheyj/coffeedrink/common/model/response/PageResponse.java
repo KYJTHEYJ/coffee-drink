@@ -1,4 +1,4 @@
-package kyjtheyj.coffeedrink.common.model;
+package kyjtheyj.coffeedrink.common.model.response;
 
 import org.springframework.data.domain.Page;
 

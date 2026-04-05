@@ -2,7 +2,7 @@ package kyjtheyj.coffeedrink.domain.member.service;
 
 import kyjtheyj.coffeedrink.common.config.jwt.JwtUtil;
 import kyjtheyj.coffeedrink.common.exception.ServiceErrorException;
-import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
+import kyjtheyj.coffeedrink.common.model.principal.MemberPrincipal;
 import kyjtheyj.coffeedrink.common.service.RedisService;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRefreshRequest;

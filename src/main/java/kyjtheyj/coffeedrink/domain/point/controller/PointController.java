@@ -1,8 +1,8 @@
 package kyjtheyj.coffeedrink.domain.point.controller;
 
 import jakarta.validation.Valid;
-import kyjtheyj.coffeedrink.common.model.BaseResponse;
-import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
+import kyjtheyj.coffeedrink.common.model.response.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.principal.MemberPrincipal;
 import kyjtheyj.coffeedrink.domain.point.model.request.PointAddRequest;
 import kyjtheyj.coffeedrink.domain.point.model.response.PointAddResponse;
 import kyjtheyj.coffeedrink.domain.point.service.PointService;
@@ -22,14 +22,14 @@ public class PointController {
     private final PointService pointService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<PointAddResponse>> addPoint(
+    public ResponseEntity<BaseResponse<PointAddResponse>> chargePoint(
             @Valid @RequestBody PointAddRequest request
             , @AuthenticationPrincipal MemberPrincipal memberInfo
     ) {
-        if (!memberInfo.email().equals(request.email())) {
+        if (!memberInfo.memberId().equals(request.memberId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(BaseResponse.fail(HttpStatus.FORBIDDEN.name(), "본인 계정만 충전 할 수 있습니다"));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(HttpStatus.OK.name(), "포인트 충전 성공", pointService.addPoint(request.email(), request.addPoint())));
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponse.success(HttpStatus.OK.name(), "포인트 충전 성공", pointService.chargePoint(request.memberId(), request.addPoint())));
     }
 }

@@ -1,6 +1,6 @@
 package kyjtheyj.coffeedrink.domain.menu.service;
 
-import kyjtheyj.coffeedrink.common.model.PageResponse;
+import kyjtheyj.coffeedrink.common.model.response.PageResponse;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuEntity;
 import kyjtheyj.coffeedrink.domain.menu.entity.MenuStockEntity;
 import kyjtheyj.coffeedrink.domain.menu.fixture.MenuFixture;

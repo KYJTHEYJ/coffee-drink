@@ -21,6 +21,7 @@ public class MemberFixture {
     public static final String refreshToken = "refreshToken";
     public static final String newAccessToken = "newAccessToken";
     public static final String newRefreshToken = "newRefreshToken";
+    public static final String wrongToken = "wrongToken";
 
     public static MemberRegisterRequest memberRegisterRequest() {
         return new MemberRegisterRequest(memberEmail, memberPassword, memberName);

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+import static kyjtheyj.coffeedrink.common.constant.RedisConst.BLACK_LIST_PREFIX;
 import static kyjtheyj.coffeedrink.common.constant.RedisConst.REFRESH_TOKEN_PREFIX;
 
 @Service
@@ -13,6 +14,7 @@ import static kyjtheyj.coffeedrink.common.constant.RedisConst.REFRESH_TOKEN_PREF
 public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
 
+    //region 토큰 관련
     public void saveRefreshToken(String email, String refreshToken, long expireTime) {
         redisTemplate.opsForValue().set(
                 REFRESH_TOKEN_PREFIX + email
@@ -26,4 +28,22 @@ public class RedisService {
         Object value = redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + email);
         return value != null ? value.toString() : null;
     }
+
+    public void deleteRefreshToken(String email) {
+        redisTemplate.delete(REFRESH_TOKEN_PREFIX + email);
+    }
+
+    public void addBlacklist(String accessToken, long expireTime) {
+        redisTemplate.opsForValue().set(
+                BLACK_LIST_PREFIX + accessToken
+                , "blacklist"
+                , expireTime
+                , TimeUnit.MILLISECONDS
+        );
+    }
+
+    public boolean isBlacklist(String accessToken) {
+        return redisTemplate.hasKey(BLACK_LIST_PREFIX + accessToken);
+    }
+    //endregion
 }

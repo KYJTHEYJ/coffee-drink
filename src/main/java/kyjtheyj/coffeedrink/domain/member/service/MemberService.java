@@ -64,7 +64,7 @@ public class MemberService {
         String email = jwtUtil.extractSubject(refreshToken);
         String savedToken = redisService.getRefreshToken(email);
 
-        if (savedToken == null || !savedToken.equals(refreshToken)) {
+        if (!savedToken.equals(refreshToken)) {
             throw new ServiceErrorException(ERR_TOKEN_INVALID);
         }
 
@@ -74,5 +74,15 @@ public class MemberService {
         redisService.saveRefreshToken(email, newRefreshToken, refreshTokenExpire);
 
         return new MemberRefreshResponse(newAccessToken, newRefreshToken);
+    }
+
+    public void logOut(String accessToken) {
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new ServiceErrorException(ERR_TOKEN_INVALID);
+        }
+
+        String email = jwtUtil.extractSubject(accessToken);
+        redisService.deleteRefreshToken(email);
+        redisService.addBlacklist(accessToken, jwtUtil.getRemainingTime(accessToken));
     }
 }

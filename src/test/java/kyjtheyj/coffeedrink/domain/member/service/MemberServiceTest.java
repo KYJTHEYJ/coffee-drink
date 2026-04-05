@@ -122,4 +122,43 @@ public class MemberServiceTest {
                 .hasMessageContaining("유효하지 않은 토큰입니다");
         verify(redisService, never()).saveRefreshToken(anyString(), anyString(), anyLong());
     }
+
+    @Test
+    @DisplayName("RefreshToken 으로 토큰 재발급 실패 - 레디스에 토큰과 다름")
+    void refreshToken_RTR_fail_null() {
+        MemberRefreshRequest request = MemberFixture.memberRefreshRequest();
+        given(jwtUtil.validateToken(request.refreshToken())).willReturn(true);
+        given(jwtUtil.extractSubject(request.refreshToken())).willReturn(MemberFixture.memberEmail);
+        given(redisService.getRefreshToken(MemberFixture.memberEmail)).willReturn(MemberFixture.wrongToken);
+
+        assertThatThrownBy(() -> memberService.refresh(request))
+                .isInstanceOf(ServiceErrorException.class)
+                .hasMessageContaining("유효하지 않은 토큰입니다");
+        verify(redisService, never()).saveRefreshToken(anyString(), anyString(), anyLong());
+    }
+
+    @Test
+    @DisplayName("로그아웃 성공")
+    void logOut() {
+        given(jwtUtil.validateToken(MemberFixture.accessToken)).willReturn(true);
+        given(jwtUtil.extractSubject(MemberFixture.accessToken)).willReturn(MemberFixture.memberEmail);
+
+        memberService.logOut(MemberFixture.accessToken);
+
+        verify(redisService).deleteRefreshToken(MemberFixture.memberEmail);
+        verify(redisService).addBlacklist(MemberFixture.accessToken, jwtUtil.getRemainingTime(MemberFixture.accessToken));
+    }
+
+    @Test
+    @DisplayName("로그아웃 실패 - 유효하지 않은 토큰")
+    void logOut_fail_invalidToken() {
+        given(jwtUtil.validateToken(MemberFixture.accessToken)).willReturn(false);
+
+        assertThatThrownBy(() -> memberService.logOut(MemberFixture.accessToken))
+                .isInstanceOf(ServiceErrorException.class)
+                .hasMessageContaining("유효하지 않은 토큰입니다");
+
+        verify(redisService, never()).deleteRefreshToken(anyString());
+        verify(redisService, never()).addBlacklist(MemberFixture.accessToken, jwtUtil.getRemainingTime(MemberFixture.accessToken));
+    }
 }

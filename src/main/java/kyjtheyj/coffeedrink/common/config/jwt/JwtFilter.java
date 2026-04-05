@@ -4,8 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kyjtheyj.coffeedrink.common.config.security.UserDetailServiceImpl;
 import kyjtheyj.coffeedrink.common.model.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
 import kyjtheyj.coffeedrink.common.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +13,9 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.pattern.PathPattern;
@@ -29,7 +30,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final UserDetailServiceImpl userDetailServiceImpl;
     private final ObjectMapper objectMapper;
     private final RedisService redisService;
 
@@ -59,15 +59,26 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if(jwtUtil.validateToken(token) && !redisService.isBlacklist(token)) {
+        if (jwtUtil.validateToken(token) && !redisService.isBlacklist(token)) {
             String email = jwtUtil.extractSubject(token);
-            UserDetails user = userDetailServiceImpl.loadUserByUsername(email);
+            String role = jwtUtil.extractRoleByToken(token);
+            UUID memberId = UUID.fromString(jwtUtil.extractMemberIdByToken(token));
+
+            MemberPrincipal principal = new MemberPrincipal(memberId, email, role);
+
             SecurityContextHolder.getContext().setAuthentication(
                     new UsernamePasswordAuthenticationToken(
-                            user
+                            principal
                             , null
-                            , user.getAuthorities())
+                            , List.of(new SimpleGrantedAuthority(role)))
             );
+        } else {
+            BaseResponse<Void> baseResponse = BaseResponse.fail(HttpStatus.UNAUTHORIZED.name(), "인증 정보가 유효하지 않습니다, 다시 로그인 후 시도하시기 바랍니다");
+
+            response.setContentType("application/json; charset=UTF-8");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write(objectMapper.writeValueAsString(baseResponse));
+            return;
         }
 
         filterChain.doFilter(request, response);

@@ -2,6 +2,7 @@ package kyjtheyj.coffeedrink.domain.member.controller;
 
 import jakarta.validation.Valid;
 import kyjtheyj.coffeedrink.common.model.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRefreshRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRegisterRequest;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,14 +35,17 @@ public class MemberController {
 
     @PostMapping("/signin")
     public ResponseEntity<BaseResponse<MemberLoginResponse>> signIn(@Valid @RequestBody MemberLoginRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.pwd()));
-        MemberLoginResponse response = memberService.signIn(request);
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.pwd()));
+        MemberLoginResponse response = memberService.signIn(request, authentication);
         return ResponseEntity.ok(BaseResponse.success(HttpStatus.OK.name(), "로그인이 완료되었습니다", response));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<BaseResponse<MemberRefreshResponse>> refresh(@Valid @RequestBody MemberRefreshRequest request) {
-        MemberRefreshResponse response = memberService.refresh(request);
+    public ResponseEntity<BaseResponse<MemberRefreshResponse>> refresh(
+            @Valid @RequestBody MemberRefreshRequest request
+            , @AuthenticationPrincipal MemberPrincipal memberInfo
+    ) {
+        MemberRefreshResponse response = memberService.refresh(request, memberInfo);
         return ResponseEntity.ok(BaseResponse.success(HttpStatus.OK.name(), "토큰이 재발급되었습니다", response));
     }
 

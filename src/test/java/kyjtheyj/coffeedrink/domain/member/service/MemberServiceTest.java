@@ -2,6 +2,7 @@ package kyjtheyj.coffeedrink.domain.member.service;
 
 import kyjtheyj.coffeedrink.common.config.jwt.JwtUtil;
 import kyjtheyj.coffeedrink.common.exception.ServiceErrorException;
+import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
 import kyjtheyj.coffeedrink.common.service.RedisService;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRefreshRequest;
@@ -11,13 +12,14 @@ import kyjtheyj.coffeedrink.domain.member.model.response.MemberRefreshResponse;
 import kyjtheyj.coffeedrink.domain.member.model.response.MemberRegisterResponse;
 import kyjtheyj.coffeedrink.domain.member.fixture.MemberFixture;
 import kyjtheyj.coffeedrink.domain.member.repository.MemberRepository;
+import kyjtheyj.coffeedrink.domain.point.repository.PointRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -26,13 +28,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
     @Mock
     MemberRepository memberRepository;
+    @Mock
+    PointRepository pointRepository;
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
@@ -71,24 +74,14 @@ public class MemberServiceTest {
     @DisplayName("로그인 성공시 토큰 발급")
     void signIn() {
         MemberLoginRequest request = MemberFixture.memberLoginRequest();
-        given(jwtUtil.createAccessToken(request.email())).willReturn(MemberFixture.accessToken);
+
+        Authentication mockAuthentication = MemberFixture.userRoleAuthentication;
+
+        given(memberRepository.findMemberEntityByEmail(request.email())).willReturn(Optional.of(MemberFixture.memberWithRoleUser()));
+        given(jwtUtil.createAccessToken(anyString(), any(), anyString())).willReturn(MemberFixture.accessToken);
         given(jwtUtil.createRefreshToken(request.email())).willReturn(MemberFixture.refreshToken);
 
-        MemberLoginResponse response = memberService.signIn(request);
-
-        assertThat(response.accessToken()).isEqualTo(MemberFixture.accessToken);
-        assertThat(response.refreshToken()).isEqualTo(MemberFixture.refreshToken);
-        verify(redisService).saveRefreshToken(anyString(), anyString(), anyLong());
-    }
-
-    @Test
-    @DisplayName("로그인 실패")
-    void signIn_fail() {
-        MemberLoginRequest request = MemberFixture.memberLoginRequest();
-        given(jwtUtil.createAccessToken(request.email())).willReturn(MemberFixture.accessToken);
-        given(jwtUtil.createRefreshToken(request.email())).willReturn(MemberFixture.refreshToken);
-
-        MemberLoginResponse response = memberService.signIn(request);
+        MemberLoginResponse response = memberService.signIn(request, mockAuthentication);
 
         assertThat(response.accessToken()).isEqualTo(MemberFixture.accessToken);
         assertThat(response.refreshToken()).isEqualTo(MemberFixture.refreshToken);
@@ -99,13 +92,16 @@ public class MemberServiceTest {
     @DisplayName("RefreshToken 으로 토큰 재발급 성공")
     void refreshToken_RTR() {
         MemberRefreshRequest request = MemberFixture.memberRefreshRequest();
+
+        MemberPrincipal mockPrincipal = MemberFixture.userRoleMemberPrincipal;
+
         given(jwtUtil.validateToken(request.refreshToken())).willReturn(true);
         given(jwtUtil.extractSubject(request.refreshToken())).willReturn(MemberFixture.memberEmail);
         given(redisService.getRefreshToken(MemberFixture.memberEmail)).willReturn(request.refreshToken());
-        given(jwtUtil.createAccessToken(MemberFixture.memberEmail)).willReturn(MemberFixture.newAccessToken);
+        given(jwtUtil.createAccessToken(MemberFixture.memberEmail, MemberFixture.memberId, MemberFixture.memberUserRole)).willReturn(MemberFixture.newAccessToken);
         given(jwtUtil.createRefreshToken(MemberFixture.memberEmail)).willReturn(MemberFixture.newRefreshToken);
 
-        MemberRefreshResponse response = memberService.refresh(request);
+        MemberRefreshResponse response = memberService.refresh(request, mockPrincipal);
 
         assertThat(response.accessToken()).isEqualTo(MemberFixture.newAccessToken);
         assertThat(response.refreshToken()).isEqualTo(MemberFixture.newRefreshToken);
@@ -118,7 +114,7 @@ public class MemberServiceTest {
         MemberRefreshRequest request = MemberFixture.memberRefreshRequest();
         given(jwtUtil.validateToken(request.refreshToken())).willReturn(false);
 
-        assertThatThrownBy(() -> memberService.refresh(request))
+        assertThatThrownBy(() -> memberService.refresh(request, mock(MemberPrincipal.class)))
                 .isInstanceOf(ServiceErrorException.class)
                 .hasMessageContaining("유효하지 않은 토큰입니다");
         verify(redisService, never()).saveRefreshToken(anyString(), anyString(), anyLong());
@@ -132,7 +128,7 @@ public class MemberServiceTest {
         given(jwtUtil.extractSubject(request.refreshToken())).willReturn(MemberFixture.memberEmail);
         given(redisService.getRefreshToken(MemberFixture.memberEmail)).willReturn(MemberFixture.wrongToken);
 
-        assertThatThrownBy(() -> memberService.refresh(request))
+        assertThatThrownBy(() -> memberService.refresh(request, mock(MemberPrincipal.class)))
                 .isInstanceOf(ServiceErrorException.class)
                 .hasMessageContaining("유효하지 않은 토큰입니다");
         verify(redisService, never()).saveRefreshToken(anyString(), anyString(), anyLong());

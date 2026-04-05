@@ -2,7 +2,7 @@ package kyjtheyj.coffeedrink.domain.member.controller;
 
 import kyjtheyj.coffeedrink.common.config.jwt.JwtUtil;
 import kyjtheyj.coffeedrink.common.config.security.SecurityConfig;
-import kyjtheyj.coffeedrink.common.config.security.UserDetailServiceImpl;
+import kyjtheyj.coffeedrink.common.service.RedisService;
 import kyjtheyj.coffeedrink.domain.member.fixture.MemberFixture;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
 import kyjtheyj.coffeedrink.domain.member.model.response.MemberLoginResponse;
@@ -40,10 +40,10 @@ public class MemberControllerTest {
 
     // Filter 를 mock 하면 컨트롤러 도달 실패로 항상 403
     @MockitoBean
-    private JwtUtil JwtUtil;
+    private JwtUtil jwtUtil;
 
     @MockitoBean
-    private UserDetailServiceImpl userDetailServiceImpl;
+    private RedisService redisService;
 
     @MockitoBean
     private AuthenticationManager authenticationManager;
@@ -54,8 +54,9 @@ public class MemberControllerTest {
         MemberLoginRequest request = MemberFixture.memberLoginRequest();
         MemberLoginResponse response = MemberFixture.memberLoginResponse();
 
-        given(authenticationManager.authenticate(any())).willReturn(mock(Authentication.class));
-        given(memberService.signIn(request)).willReturn(response);
+        Authentication mockAuthentication = MemberFixture.userRoleAuthentication;
+        given(authenticationManager.authenticate(any())).willReturn(mockAuthentication);
+        given(memberService.signIn(any(), any())).willReturn(response);
 
         assertThat(mockMvc.post()
                 .uri("/v1/api/members/signin")
@@ -81,6 +82,7 @@ public class MemberControllerTest {
                 .bodyJson()
                 .extractingPath("$.success").asBoolean().isEqualTo(false);
 
-        verify(memberService, never()).signIn(request);
+        // any() 사용 - mock() 은 호출마다 새 인스턴스라 매칭 불가
+        verify(memberService, never()).signIn(any(), any());
     }
 }

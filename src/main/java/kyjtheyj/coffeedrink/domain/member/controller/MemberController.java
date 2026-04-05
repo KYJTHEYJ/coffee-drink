@@ -1,8 +1,8 @@
 package kyjtheyj.coffeedrink.domain.member.controller;
 
 import jakarta.validation.Valid;
-import kyjtheyj.coffeedrink.common.model.BaseResponse;
-import kyjtheyj.coffeedrink.common.model.MemberPrincipal;
+import kyjtheyj.coffeedrink.common.model.response.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.principal.MemberPrincipal;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberLoginRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRefreshRequest;
 import kyjtheyj.coffeedrink.domain.member.model.request.MemberRegisterRequest;

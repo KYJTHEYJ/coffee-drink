@@ -1,4 +1,4 @@
-package kyjtheyj.coffeedrink.common.model;
+package kyjtheyj.coffeedrink.common.model.principal;
 
 import java.util.UUID;
 

@@ -1,6 +1,6 @@
 package kyjtheyj.coffeedrink.common.exception;
 
-import kyjtheyj.coffeedrink.common.model.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.response.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +10,6 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.naming.AuthenticationException;
 
 @Slf4j
 @RestControllerAdvice

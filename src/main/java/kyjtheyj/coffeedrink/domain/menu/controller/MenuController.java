@@ -1,8 +1,8 @@
 package kyjtheyj.coffeedrink.domain.menu.controller;
 
 import jakarta.validation.Valid;
-import kyjtheyj.coffeedrink.common.model.BaseResponse;
-import kyjtheyj.coffeedrink.common.model.PageResponse;
+import kyjtheyj.coffeedrink.common.model.response.BaseResponse;
+import kyjtheyj.coffeedrink.common.model.response.PageResponse;
 import kyjtheyj.coffeedrink.domain.menu.model.request.MenuRegisterRequest;
 import kyjtheyj.coffeedrink.domain.menu.model.response.MenuListResponse;
 import kyjtheyj.coffeedrink.domain.menu.model.response.MenuRegisterResponse;
